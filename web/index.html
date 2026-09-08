@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clearance Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFAF7; --ink:#1E1F22; --ink-2:#4B4D52; --ink-3:#8A8C92; --rule:#DCD9D1; --rule-2:#ECEAE4;
+    --conflict:#C8322B; --conflict-bg:#F9E3E1;
+    --caution:#B5760F; --caution-bg:#FBEFD6;
+    --clear:#2E7D4F; --clear-bg:#DFF0E6;
+    --pending:#9C9EA5; --pending-bg:#EEEEF0;
+    --mono:'Courier Prime', 'Courier New', monospace;
+    --sans:'Libre Franklin', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
+  a{color:inherit}
+  button{font:inherit;cursor:pointer}
+  button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  header{display:flex;align-items:center;gap:20px;padding:14px 24px;border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:0;z-index:5}
+  .brand{font-family:var(--mono);font-weight:700;font-size:18px;letter-spacing:.02em}
+  .brand small{font-family:var(--sans);font-weight:400;color:var(--ink-3);margin-left:10px;font-size:13px}
+  .draft{display:none;align-items:center;gap:10px;font-size:14px;color:var(--ink-2)}
+  .draft b{color:var(--ink);font-weight:600}
+  .chip{border:1px solid var(--rule);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--ink-2);background:#fff}
+  .spacer{flex:1}
+  .stage{display:none;align-items:center;gap:8px;font-size:13px;color:var(--ink-2)}
+  .stage .dot{width:8px;height:8px;border-radius:50%;background:var(--ink);animation:pulse 1.2s infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  @media (prefers-reduced-motion: reduce){.stage .dot{animation:none}}
+  .actions{display:none;gap:8px}
+  .btn{border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:6px;padding:7px 12px;font-size:13px;font-weight:500}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn:disabled{opacity:.4;cursor:default}
+
+  main{display:grid;grid-template-columns:minmax(0,1fr) 440px;min-height:calc(100vh - 57px)}
+  @media (max-width:980px){main{grid-template-columns:1fr}}
+
+  /* ---------- intake ---------- */
+  #intake{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:64px 24px}
+  #intake h1{font-family:var(--mono);font-weight:700;font-size:28px;margin:0 0 6px;text-align:center}
+  #intake p.lede{max-width:560px;text-align:center;color:var(--ink-2);margin:0 0 32px}
+  .drop{width:min(760px,100%);border:1.5px dashed var(--ink-3);border-radius:10px;padding:36px;text-align:center;background:#fff}
+  .drop.over{border-color:var(--ink);background:#f4f3ef}
+  .drop input[type=file]{display:none}
+  .drop label{display:inline-block;margin-top:6px}
+  .drop textarea{width:100%;margin-top:16px;min-height:120px;border:1px solid var(--rule);border-radius:6px;padding:10px;font-family:var(--mono);font-size:13px;resize:vertical;background:var(--paper)}
+  .samples{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+  .samples .btn.ghost{font-family:var(--mono)}
+  .how{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-width:900px;margin-top:56px;font-size:13.5px;color:var(--ink-2)}
+  .how div b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
+  @media (max-width:760px){.how{grid-template-columns:1fr 1fr}}
+
+  /* ---------- script page ---------- */
+  #page{padding:32px 40px 80px;overflow:auto}
+  .sheet{max-width:640px;margin:0 auto;background:#fff;border:1px solid var(--rule);padding:56px 64px;font-family:var(--mono);font-size:13.5px;line-height:1.55;white-space:pre-wrap;box-shadow:0 1px 0 var(--rule)}
+  .sheet .h{font-weight:700;margin-top:1.2em;display:block}
+  .sheet .meta{color:var(--ink-3)}
+  mark{background:var(--pending-bg);color:inherit;border-bottom:2px solid var(--pending);padding:0 1px;cursor:pointer;border-radius:2px;transition:background .25s}
+  mark.conflict{background:var(--conflict-bg);border-color:var(--conflict)}
+  mark.caution{background:var(--caution-bg);border-color:var(--caution)}
+  mark.clear{background:transparent;border-color:var(--clear)}
+  mark.active{outline:2px solid var(--ink)}
+  mark.replaced{background:#fff;border-bottom:2px solid var(--ink);text-decoration:line-through;text-decoration-color:var(--conflict)}
+  mark.replaced::after{content:attr(data-new);text-decoration:none;color:var(--ink);margin-left:6px;font-weight:700}
+
+  /* ---------- ledger ---------- */
+  #ledger{border-left:1px solid var(--rule);background:var(--paper);display:flex;flex-direction:column;position:sticky;top:57px;height:calc(100vh - 57px)}
+  @media (max-width:980px){#ledger{position:static;height:auto;border-left:0;border-top:1px solid var(--rule)}}
+  .tally{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--rule)}
+  .tally button{border:0;background:transparent;padding:14px 12px;text-align:left;border-right:1px solid var(--rule)}
+  .tally button:last-child{border-right:0}
+  .tally button.on{background:#fff}
+  .tally .n{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1}
+  .tally .l{font-size:12px;color:var(--ink-2);margin-top:4px}
+  .tally .conflict .n{color:var(--conflict)} .tally .caution .n{color:var(--caution)} .tally .clear .n{color:var(--clear)}
+  .summary{padding:14px 18px;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--ink-2);display:none}
+  .summary b{color:var(--ink);font-weight:600}
+  #items{overflow:auto;flex:1}
+  .item{border-bottom:1px solid var(--rule-2);padding:12px 18px;cursor:pointer}
+  .item:hover{background:#fff}
+  .item.open{background:#fff}
+  .item .row{display:flex;align-items:baseline;gap:10px}
+  .pill{font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:.01em;flex:none;min-width:64px;text-align:center}
+  .pill.conflict{background:var(--conflict);color:#fff}
+  .pill.caution{background:var(--caution);color:#fff}
+  .pill.clear{background:var(--clear);color:#fff}
+  .pill.pending{background:var(--pending-bg);color:var(--ink-2)}
+  .item .name{font-family:var(--mono);font-weight:700;font-size:14px}
+  .item .cat{color:var(--ink-3);font-size:12px;margin-left:auto}
+  .item .where{color:var(--ink-3);font-size:12px;margin-top:2px}
+  .item .badge{font-size:11px;color:var(--ink-2);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-left:6px}
+  .detail{display:none;margin-top:10px;font-size:13.5px}
+  .item.open .detail{display:block}
+  .detail p{margin:0 0 8px}
+  .detail .rec{font-weight:600}
+  .detail .ev{margin:8px 0 0;padding:0;list-style:none}
+  .detail .ev li{margin:6px 0;color:var(--ink-2);font-size:12.5px}
+  .detail .ev a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule)}
+  .alts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .alts button{font-family:var(--mono);font-size:12.5px;padding:4px 8px;border-radius:6px;border:1px solid var(--rule);background:#fff}
+  .alts button.ok{border-color:var(--clear);color:var(--clear)}
+  .alts button.chosen{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .queries{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:8px;word-break:break-word}
+  .empty{padding:40px 18px;color:var(--ink-3);text-align:center;font-size:13.5px}
+  .foot{border-top:1px solid var(--rule);padding:12px 18px;display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--ink-3)}
+  .foot .btn{margin-left:auto}
+  .err{background:var(--conflict-bg);color:var(--conflict);padding:10px 18px;font-size:13px;display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">CLEARANCE DESK<small>script clearance, before legal sees it</small></div>
+  <div class="draft" id="draft"></div>
+  <div class="spacer"></div>
+  <div class="stage" id="stage"><span class="dot"></span><span id="stageText">Reading the script</span></div>
+  <div class="actions" id="actions">
+    <a id="exportBtn" class="btn ghost" href="#" download>Export report</a>
+    <button class="btn ghost" id="newBtn">New script</button>
+  </div>
+</header>
+
+<main>
+  <section id="intake">
+    <h1>Clear a draft in minutes, not weeks.</h1>
+    <p class="lede">Upload a screenplay. Every character name, business, brand, song, address and phone number is checked against the real world and comes back as clear, caution or conflict — with evidence and clean replacements.</p>
+    <div class="drop" id="drop">
+      <div><b>Drop a screenplay</b> (.pdf, .fountain, .txt) or <label class="btn ghost"><input type="file" id="file" accept=".pdf,.txt,.fountain">choose a file</label></div>
+      <textarea id="paste" placeholder="…or paste the script text here"></textarea>
+      <div style="margin-top:12px"><button class="btn" id="pasteBtn">Clear this draft</button></div>
+      <div class="samples" id="samples"></div>
+    </div>
+    <div class="how">
+      <div><b>Extract</b>Gemini reads the whole draft and lists everything a clearance house would flag.</div>
+      <div><b>Research</b>Each item is checked on the live web through Parallel Search — same queries every time.</div>
+      <div><b>Judge</b>Gemini scores the evidence like a clearance attorney and cites what it found.</div>
+      <div><b>Fix</b>Conflicts get replacement names that are searched again and verified clean.</div>
+    </div>
+  </section>
+
+  <section id="page" hidden><div class="sheet" id="sheet"></div></section>
+
+  <aside id="ledger" hidden>
+    <div class="err" id="err"></div>
+    <div class="tally">
+      <button class="conflict on" data-f="conflict"><div class="n" id="nConflict">0</div><div class="l">conflict</div></button>
+      <button class="caution on" data-f="caution"><div class="n" id="nCaution">0</div><div class="l">caution</div></button>
+      <button class="clear on" data-f="clear"><div class="n" id="nClear">0</div><div class="l">clear</div></button>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div id="items"><div class="empty">Reading the script…</div></div>
+    <div class="foot"><span id="footNote"></span><button class="btn" id="reviseBtn" disabled>Clear revised draft</button></div>
+  </aside>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const state = { job:null, text:'', filters:new Set(['conflict','caution','clear']), replacements:{}, es:null, openIdx:null };
+
+const CAT = {person:'person', business:'business', brand:'brand', title:'title', location:'location', identifier:'identifier', organization:'organization'};
+const STAGE_TEXT = {extracting:'Reading the script', researching:'Searching the web for every item', judging:'Weighing the evidence', remediating:'Finding clean replacements', reporting:'Writing the memo', done:'Done', error:'Failed'};
+
+// ---------- intake ----------
+fetch('/api/samples').then(r=>r.json()).then(list=>{
+  const box=$('#samples');
+  list.forEach(s=>{
+    const b=document.createElement('button'); b.className='btn ghost'; b.textContent=s.title.replace(/^Title:\s*/,'')+' — '+(s.file.includes('v2')?'revised':'first draft');
+    b.onclick=()=>submit({sample:s.file}); box.appendChild(b);
+  });
+});
+const drop=$('#drop');
+['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0]; if(f) submit({file:f})});
+$('#file').onchange=e=>{const f=e.target.files[0]; if(f) submit({file:f})};
+$('#pasteBtn').onclick=()=>submit({text:$('#paste').value});
+$('#newBtn').onclick=()=>location.reload();
+
+async function submit(src, reviseOf){
+  const fd=new FormData();
+  if(src.file) fd.append('file',src.file); if(src.text) fd.append('text',src.text); if(src.sample) fd.append('sample',src.sample);
+  const url = reviseOf ? `/api/jobs/${reviseOf}/revise` : '/api/jobs';
+  const r=await fetch(url,{method:'POST',body:fd});
+  if(!r.ok){ alert((await r.json()).detail||'Could not start'); return; }
+  const job=await r.json();
+  state.replacements={}; state.openIdx=null;
+  load(job.id);
+}
+
+// ---------- job loading + SSE ----------
+async function load(id){
+  history.replaceState(null,'',`?job=${id}`);
+  $('#intake').hidden=true; $('#page').hidden=false; $('#ledger').hidden=false;
+  $('#stage').style.display='flex'; $('#actions').style.display='flex'; $('#draft').style.display='flex';
+  $('#exportBtn').href=`/api/jobs/${id}/report.md`;
+  const job=await (await fetch(`/api/jobs/${id}`)).json();
+  state.job=job; state.text=job.script_text||'';
+  render();
+  if(job.status==='done'||job.status==='error') return;
+  if(state.es) state.es.close();
+  state.es=new EventSource(`/api/jobs/${id}/events`);
+  state.es.onmessage=async ev=>{
+    const e=JSON.parse(ev.data);
+    if(e.kind==='snapshot'){ state.job=e.job; render(); return; }
+    // cheap path: pull the job on structural events, patch counts otherwise
+    const fresh=await (await fetch(`/api/jobs/${id}`)).json();
+    state.job=fresh; state.text=fresh.script_text||state.text;
+    render();
+    if(e.kind==='done'||e.kind==='error') state.es.close();
+  };
+}
+
+// ---------- rendering ----------
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function rx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+function risk(c){return (c.verdict&&c.verdict.risk)||'pending'}
+
+function render(){
+  const job=state.job; if(!job) return;
+  const ex=job.extraction||{};
+  $('#draft').innerHTML=`<b>${esc(ex.title||job.script_name)}</b><span class="chip">${esc(job.script_name)}</span>${job.parent_id?'<span class="chip">revision of '+job.parent_id+'</span>':''}${ex.setting?'<span class="chip">'+esc(ex.setting)+'</span>':''}`;
+  $('#stageText').textContent=STAGE_TEXT[job.status]||job.status;
+  $('#stage').style.display = (job.status==='done'||job.status==='error')?'none':'flex';
+  $('#err').style.display=job.error?'block':'none'; $('#err').textContent=job.error||'';
+  const c=job.counts||{};
+  $('#nConflict').textContent=c.conflict||0; $('#nCaution').textContent=c.caution||0; $('#nClear').textContent=c.clear||0;
+  $('#summary').style.display=job.summary?'block':'none'; $('#summary').innerHTML=job.summary?'<b>Memo.</b> '+esc(job.summary):'';
+  renderSheet(job); renderItems(job);
+  const chosen=Object.keys(state.replacements).length;
+  $('#reviseBtn').disabled=!(job.status==='done'&&chosen>0);
+  $('#footNote').textContent = job.status==='done' ? (chosen?`${chosen} replacement${chosen>1?'s':''} applied — re-clear only what changed`:(job.reused?`${job.reused} items carried forward unchanged from the previous draft`:'Pick a replacement to revise the draft')) : `${(job.cleared||[]).length} items found`;
+}
+
+function renderSheet(job){
+  const items=job.cleared||[];
+  let html;
+  if(!state.text){ html='<span class="meta">Script text unavailable for display — results are in the ledger.</span>'; $('#sheet').innerHTML=html; return; }
+  const lines=state.text.split('\n');
+  // build a single regex over all item texts (longest first so "Halvorsen & Price" beats "Halvorsen")
+  const byText=new Map(); items.forEach((c,i)=>{ if(!byText.has(c.item.text)) byText.set(c.item.text,i); });
+  const keys=[...byText.keys()].sort((a,b)=>b.length-a.length);
+  const re=keys.length?new RegExp('('+keys.map(rx).join('|')+')','gi'):null;
+  const kl=new Map(keys.map(k=>[k.toLowerCase(),byText.get(k)]));
+  html=lines.map(line=>{
+    const t=line.trim();
+    let cls='';
+    if(/^(INT\.|EXT\.|INT\/EXT|I\/E)/.test(t)) cls='h';
+    else if(/^(Title|Credit|Author|Draft date):/.test(t)) cls='meta';
+    let out=esc(line);
+    if(re && cls!=='meta'){
+      out=out.replace(re,m=>{
+        const idx=kl.get(m.toLowerCase()); if(idx==null) return m;
+        const c=items[idx]; const r=risk(c); const rep=state.replacements[idx];
+        return `<mark class="${rep?'replaced':r}${state.openIdx===idx?' active':''}" data-idx="${idx}" ${rep?`data-new="${esc(rep)}"`:''}>${m}</mark>`;
+      });
+    }
+    return cls?`<span class="${cls}">${out}</span>`:out;
+  }).join('\n');
+  $('#sheet').innerHTML=html;
+  $('#sheet').querySelectorAll('mark').forEach(m=>m.onclick=()=>openItem(+m.dataset.idx,true));
+}
+
+function renderItems(job){
+  const items=job.cleared||[];
+  const order={conflict:0,caution:1,pending:2,clear:3};
+  const idxs=items.map((c,i)=>i).filter(i=>{const r=risk(items[i]); return r==='pending'||state.filters.has(r)})
+    .sort((a,b)=>(order[risk(items[a])]-order[risk(items[b])])||items[a].item.page-items[b].item.page);
+  if(!items.length){ $('#items').innerHTML='<div class="empty">Reading the script…</div>'; return; }
+  $('#items').innerHTML=idxs.map(i=>{
+    const c=items[i], it=c.item, v=c.verdict, r=risk(c);
+    const alts=(c.alternatives||[]).map(a=>`<button class="${a.verified?'ok':''}${state.replacements[i]===a.text?' chosen':''}" data-alt="${esc(a.text)}" title="${esc(a.note||'')}">${esc(a.text)}${a.verified?' ✓':''}</button>`).join('');
+    return `<div class="item ${state.openIdx===i?'open':''}" data-idx="${i}">
+      <div class="row"><span class="pill ${r}">${r}</span><span class="name">${esc(it.text)}</span>${c.reused_from_previous_draft?'<span class="badge">carried over</span>':(job.parent_id?'<span class="badge">new</span>':'')}<span class="cat">${CAT[it.category]||it.category}</span></div>
+      <div class="where">${esc(it.scene)} · p.${it.page}${it.occurrences>1?' · ×'+it.occurrences:''}</div>
+      <div class="detail">
+        <p><i>${esc(it.context)}</i></p>
+        ${v?`<p>${esc(v.reasoning)}</p><p class="rec">${esc(v.recommendation||'')}</p>`:'<p style="color:var(--ink-3)">Waiting for evidence…</p>'}
+        ${v&&v.matches&&v.matches.length?`<ul class="ev">${v.matches.map(m=>`<li><a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.title||m.url)}</a> — ${esc(m.why)}</li>`).join('')}</ul>`:''}
+        ${alts?`<div class="alts">${alts}</div>`:''}
+        ${c.evidence&&c.evidence.queries?`<div class="queries">searched: ${c.evidence.queries.map(esc).join(' / ')}</div>`:''}
+      </div></div>`;
+  }).join('');
+  $('#items').querySelectorAll('.item').forEach(el=>el.onclick=e=>{
+    if(e.target.dataset.alt!=null){ choose(+el.dataset.idx,e.target.dataset.alt); e.stopPropagation(); return; }
+    if(e.target.tagName==='A') return;
+    openItem(+el.dataset.idx,false);
+  });
+}
+function openItem(i,scrollLedger){
+  state.openIdx = state.openIdx===i?null:i; render();
+  const m=$('#sheet').querySelector(`mark[data-idx="${i}"]`); if(m&&state.openIdx===i) m.scrollIntoView({block:'center',behavior:'smooth'});
+  const el=$('#items').querySelector(`.item[data-idx="${i}"]`); if(el&&scrollLedger) el.scrollIntoView({block:'nearest'});
+}
+function choose(i,alt){ if(state.replacements[i]===alt) delete state.replacements[i]; else state.replacements[i]=alt; render(); }
+
+document.querySelectorAll('.tally button').forEach(b=>b.onclick=()=>{const f=b.dataset.f; if(state.filters.has(f)) state.filters.delete(f); else state.filters.add(f); b.classList.toggle('on'); render();});
+
+$('#reviseBtn').onclick=()=>{
+  let text=state.text; const items=state.job.cleared;
+  for(const [i,alt] of Object.entries(state.replacements)){ const old=items[i].item.text; text=text.replace(new RegExp(rx(old),'g'),alt); }
+  text=text.replace(/Draft date:.*/, 'Draft date: Revised via Clearance Desk');
+  submit({text}, state.job.id);
+};
+
+const qs=new URLSearchParams(location.search); if(qs.get('job')) load(qs.get('job'));
+</script>
+</body>
+</html>
