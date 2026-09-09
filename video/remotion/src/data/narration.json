@@ -1,0 +1,76 @@
+[
+  {
+    "id": "01",
+    "title": "The Problem and the Money",
+    "narration": "Every script gets a clearance report before it shoots. Every name, brand, and song, checked by hand. One thousand to five thousand dollars per draft. One to three weeks. It starts over on every rewrite. Errors and omissions insurance \u2014 E and O \u2014 requires it. This is Clearance Desk.",
+    "visual": "Cold open on a dark title card: 'Every script gets cleared before it shoots.' Small sponsor badges on the card from second one: 'Parallel Search API \u00b7 Google ADK + Gemini'. Then three stat lines animate in one at a time, timed to the narration: '$1,000\u2013$5,000 per draft', '1\u20133 weeks', 'restarts on every rewrite'. On 'This is Clearance Desk', hard cut to a full-screen screenshot of the empty Clearance Desk landing page at the Cloud Run URL (browser chrome cropped out), with the product name overlaid.",
+    "target_seconds": 21
+  },
+  {
+    "id": "02",
+    "title": "Upload and Extraction",
+    "narration": "Upload The Ledger, a Boston legal thriller. Gemini reads the draft and extracts every clearance-sensitive item: names, businesses, brands, songs, addresses. Forty-eight items, each tied to where it appears in the script.",
+    "visual": "Screenshot sequence of the real app: the sample picker with 'The Ledger \u2014 first draft' clicked, then the screenplay text rendered in the app with pending (neutral/grey) highlights appearing over names, brands, and addresses. A status ticker shows 'reading' then 'searching'. Overlay a counter that ticks up to '48 items' as highlights populate. Editor: capture the moment right after job start, before any verdicts land.",
+    "target_seconds": 13
+  },
+  {
+    "id": "03",
+    "title": "Live Research via Parallel",
+    "narration": "Then each item goes to the live web through Parallel's Search API. Two to three templated queries per item \u2014 the same queries every run. That determinism matters; you will see why in a minute.",
+    "visual": "Split view: left half is the app's risk ledger with items in 'researching' state; right half is a stylized Remotion graphic of query fan-out \u2014 the item 'DANIEL REYES / person / Boston attorney' (the Devpost example, so script and Devpost rhyme) spawning 2-3 fixed query strings that fly toward a 'Parallel Search API' node. Keep the query text real in shape (name + profession + city), monospace. Badge on the Parallel node: 'mode: fast'.",
+    "target_seconds": 15
+  },
+  {
+    "id": "04",
+    "title": "Verdicts Land",
+    "narration": "As evidence comes back, Gemini judges each item against it. Highlights resolve live \u2014 green clear, amber caution, red conflict. The Ledger: twenty-five conflict, twelve caution, eleven clear, every verdict backed by cited sources.",
+    "visual": "Screenshot or screen capture of the screenplay view as highlights flip from grey to green/amber/red across the page \u2014 the money shot of the app (use clearing-pending.png / clearing-mid.png progression, then done-overview.png). End the scene on the finished job's summary: a Remotion stat bar reading '48 items \u2014 25 conflict / 12 caution / 11 clear' in the three verdict colors, conflict-first to match the app's ledger sort \u2014 conflicts dominate; half the draft is a legal problem. Hold the stat bar in silence for ~1.5s after the narration ends (see hold_seconds) \u2014 let the numbers land. Editor note from FOOTAGE.md: shots 2-3 come from a different run than the finished job; separate them from this scene's frames with a beat change.",
+    "target_seconds": 14,
+    "hold_seconds": 1.5
+  },
+  {
+    "id": "05",
+    "title": "Anatomy of a Conflict",
+    "narration": "Click a conflict. Northstar Consulting Group \u2014 in the script, a shell company receiving suspicious wires. On the live web, Parallel surfaced real businesses operating under that name. Gemini scored it a conflict and wrote the reasoning like a clearance attorney, with sources linked.",
+    "visual": "Zoom into the risk ledger entry for NORTHSTAR CONSULTING GROUP (red/conflict). Show the expanded detail panel from the real app: the portrayal line (shell company, suspicious wires), the verdict, the attorney-style rationale text, and the evidence links to real web sources. Slow push-in on the citation links, then hold on them in silence for ~1.5s after the narration ends (see hold_seconds) \u2014 the citations are the credibility anchor. This is the proof-of-real-research scene \u2014 use actual screenshots (conflict-detail.png, conflict-evidence.png), not mockups. The footage confirms the narration's safe wording: the evidence panel cites an active Florida registry entity 'NORTHSTAR CONSULTING GROUP LLC', an exact match \u2014 make sure that citation line is legible in the push-in.",
+    "target_seconds": 18,
+    "hold_seconds": 1.5
+  },
+  {
+    "id": "06",
+    "title": "Verified Replacements",
+    "narration": "A conflict list is a problem. A conflict list with fixes is a product. Caroline Mercer, the prosecutor character, got proposed replacements \u2014 each one searched again through Parallel and judged again. Josephine Sterling came back verified clean before it was shown.",
+    "visual": "The CAROLINE MERCER conflict entry with its replacement chips below (alternatives.png \u2014 narration is deliberately count-free; the footage shows ELEANOR CALDWELL unverified, JOSEPHINE STERLING verified, GENEVIEVE PRESCOTT verified). Highlight the 'JOSEPHINE STERLING' chip with its verified-clean checkmark. Small Remotion annotation arrow: 'searched again via Parallel \u2192 judged again \u2192 verified'. Editor: capture the chip row with the checkmark visible; a hover state is a bonus.",
+    "target_seconds": 18
+  },
+  {
+    "id": "07",
+    "title": "The Revision Loop",
+    "narration": "Now the rewrite \u2014 upload the revision. Because the queries are deterministic, unchanged items carry their verdicts forward: thirty-nine of forty-four came straight over, only the changes were researched, and the run finished in under three minutes, not seven.",
+    "visual": "Screenshots of the revision flow (replacement-applied.png then revise-carryover.png): 'carried over' badges on unchanged items, the Boston Herald row wearing its 'new' badge. Remotion overlay stats timed to narration: '39 of 44 verdicts carried over' and '2:58 vs 7:21'. Required (not optional): a quick before/after diff flash \u2014 CAROLINE MERCER struck through, JOSEPHINE STERLING inserted \u2014 it makes 'only the changes were researched' legible without narration.",
+    "target_seconds": 16
+  },
+  {
+    "id": "08",
+    "title": "The Exportable Report",
+    "narration": "When it finishes, export the report. An attorney-style memo up top, then every item with its verdict, evidence, and reasoning. Ready for the lawyer who signs.",
+    "visual": "The exported markdown report scrolling slowly: memo paragraph first, then the itemized table of verdicts with evidence citations. Render it as a clean document view (or screenshot of the report.md endpoint). A subtle 'Export report' click precedes the scroll.",
+    "target_seconds": 11
+  },
+  {
+    "id": "09",
+    "title": "Under the Hood",
+    "narration": "Under the hood: one Google ADK sequential agent, five stages. Gemini where judgment lives \u2014 reading the draft, weighing evidence, writing the memo. Parallel Search for all the research, on templated queries. That split is what makes revisions trustworthy.",
+    "visual": "Remotion architecture diagram, built to match the README pipeline: a SequentialAgent box containing five stages in order \u2014 extractor (Gemini 2.5 Pro), researcher (Parallel Search API), judge (Gemini 2.5 Flash), remediator (Parallel + Gemini), reporter (Gemini 2.5 Pro). Color-code Gemini stages vs the deterministic Parallel stages. Footer badges: Google ADK, Vertex AI, Cloud Run, Firestore. Optionally ghost a screenshot of agent/pipeline.py behind the diagram.",
+    "target_seconds": 16
+  },
+  {
+    "id": "10",
+    "title": "The Close",
+    "narration": "Every distributor requires E and O insurance. Every E and O policy requires this report. Nobody has automated it \u2014 until now. Clearance Desk. Clear a draft in minutes.",
+    "visual": "Return to the finished report / cleared script view, then dissolve to the closing card: 'Clearance Desk' wordmark, tagline 'Clear a draft in minutes.', the live app URL, and small badges for Parallel Search API + Google ADK / Gemini. Hold the card through the final line and two seconds of silence.",
+    "target_seconds": 12,
+    "tts_note": "Insert a 0.5s beat of silence after 'until now.' and before 'Clearance Desk.' \u2014 sound agent: generate the closing line as its own clip or add the pause explicitly so the tagline lands.",
+    "hold_seconds": 2.5
+  }
+]

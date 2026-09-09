@@ -1,0 +1,12 @@
+remotion/node_modules/
+out/
+audio/*.wav
+audio/raw/
+out/review-frames/
+out/judge-frames/
+out/spot/
+out/frames/
+.tts-venv/
+remotion/public/audio/
+remotion/public/assets/
+remotion/src/data/durations.json

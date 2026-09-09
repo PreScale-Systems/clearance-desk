@@ -1,0 +1,24 @@
+{
+  "name": "clearance-desk-demo-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio",
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "render": "remotion render Demo ../out/clearance-desk-demo.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p",
+    "render:test": "remotion render Demo ../out/test.mp4 --codec=h264"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/google-fonts": "^4.0.0",
+    "@remotion/transitions": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.5.0"
+  }
+}
