@@ -36,6 +36,6 @@ Pilot with two clearance houses (report export in their house format is the whol
 google-adk, google-genai, Gemini 2.5 Pro / Flash, Vertex AI, Cloud Run, Firestore, Secret Manager, Parallel Search API (parallel-web), FastAPI, Python
 
 ## Links
-- Hosted app: <CLOUD RUN URL>
-- Repo: <GITHUB URL>
+- Hosted app: https://clearance-desk-769027363263.us-central1.run.app
+- Repo: https://github.com/PreScale-Systems/clearance-desk
 - Video: <YOUTUBE URL>
