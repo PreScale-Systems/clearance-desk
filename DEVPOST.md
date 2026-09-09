@@ -38,4 +38,4 @@ google-adk, google-genai, Gemini 2.5 Pro / Flash, Vertex AI, Cloud Run, Firestor
 ## Links
 - Hosted app: https://clearance-desk-769027363263.us-central1.run.app
 - Repo: https://github.com/PreScale-Systems/clearance-desk
-- Video: <YOUTUBE URL>
+- Video: https://youtu.be/vRWWZiCedeY
